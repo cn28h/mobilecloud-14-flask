@@ -69,7 +69,7 @@ def video():
 
 @app.route('/view/video', methods=('GET', 'POST'))
 def view_video():
-    rsp = '''<!doctype html><body>'''
+    rsp = '''<!doctype html><html><body>'''
     if request.method == 'POST':
         add_video_from_post(request.form)
         rsp += 'Video added!<br>\n'
