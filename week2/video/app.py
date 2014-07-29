@@ -42,9 +42,9 @@ def index():
 
 def add_video_from_post(form):
     try:
-        name     = request.form.get('name', '').strip()
-        url      = request.form.get('url', '').strip()
-        duration = request.form.get('duration', '').strip()
+        name     = form.get('name', '').strip()
+        url      = form.get('url', '').strip()
+        duration = form.get('duration', '').strip()
 
         if len(name) < 1 or len(url) < 10 or len(duration) < 1 or \
                 int(duration) <= 0:
@@ -58,19 +58,23 @@ def add_video_from_post(form):
 
 @app.route('/video', methods=('GET', 'POST'))
 def video():
+    rsp = ''
     if request.method == 'POST':
         add_video_from_post(request.form)
+        rsp = 'Video added!\n'
 
     with video_lock:
-        rsp = '\n'.join('{}: {}'.format(v.name, v.url) for v in video_list)
+        rsp += '\n'.join('{}: {}'.format(v.name, v.url) for v in video_list)
     return Response(rsp, mimetype='text/plain')
 
 @app.route('/view/video', methods=('GET', 'POST'))
 def view_video():
+    rsp = '''<!doctype html><body>'''
     if request.method == 'POST':
         add_video_from_post(request.form)
+        rsp += 'Video added!<br>\n'
 
-    rsp = '''
+    rsp += '''
           <form name='formvideo' method='POST' target='_self'>
             <fieldset><legend>Video Data</legend>
             <table><tr>
@@ -89,7 +93,7 @@ def view_video():
     with video_lock:
         rsp += '\n'.join('{}: {}<br />'.format(v.name, v.url) for v in video_list)
 
-    return rsp
+    return rsp + '</body></html>'
 
 if __name__ == '__main__':
     manager.run()
