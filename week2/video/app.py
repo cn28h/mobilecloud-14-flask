@@ -42,7 +42,15 @@ def index():
 
 def add_video_from_post(form):
     try:
-        v = Video(request.form['name'], request.form['url'], request.form['duration'])
+        name     = request.form.get('name', '').strip()
+        url      = request.form.get('url', '').strip()
+        duration = request.form.get('duration', '').strip()
+
+        if len(name) < 1 or len(url) < 10 or len(duration) < 1 or \
+                int(duration) <= 0:
+            raise ValueError('Input validation failed')
+
+        v = Video(name, url, duration)
         with video_lock:
             video_list.append(v)
     except ValueError:
